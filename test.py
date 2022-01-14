@@ -1,14 +1,10 @@
 import streamlit as st
-import matplotlib.pyplot as plt
-import altair as alt
 from alpha_vantage.timeseries import TimeSeries
 from datetime import datetime
 import quandl
 import pandas as pd
 import pipu_upd as pu
 import numpy as np
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, LSTM
 import tensorflow as tf
 import pickle
 import os
