@@ -1,0 +1,9 @@
+tensorflow
+matplotlib
+keras
+streamlit
+alpha_vantage
+numpy
+sklearn
+pandas
+quandl
