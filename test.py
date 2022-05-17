@@ -103,7 +103,7 @@ with st.spinner('Подождите. Выполняются вычисления
     old_index = len(data)
 
     # n = 50
-    n = st.slider('Количество дней прогноза:', 0, 350, 50)
+    n = st.slider('Количество дней прогноза:', 0, 350, 5)
     print('Прогноз выбранного количества значений: ', n)
     forecast_n = []
     vect_pred = valid_data['4. close'].values
