@@ -3,6 +3,7 @@ from sklearn.preprocessing import MinMaxScaler
 import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, LSTM
+from keras.layers import Bidirectional
 import tensorflow as tf
 import pandas as pd
 import quandl
@@ -12,7 +13,7 @@ import pickle
 import os
 import datetime as dt
 import streamlit
-comp = 'TSLA'
+comp = 'IBM'
 
 def get_df(quandl_api_key, times_key,comp):
     quandl.ApiConfig.api_key = quandl_api_key
@@ -38,7 +39,7 @@ def data_preparation(df):
 
 def scaled(data, size_train_sample, count_step_for_learn):
     data = data.values
-    scaler = MinMaxScaler(feature_range=(0, 1))
+    scaler = MinMaxScaler(feature_range=(-1, 1))
     scaled_data = scaler.fit_transform(data)
 
     train = data[0:int(size_train_sample * len(data)), :]
@@ -48,8 +49,9 @@ def scaled(data, size_train_sample, count_step_for_learn):
     print('Размер проверочных данных: ', len(test))
     print('Число элементов для прогноза следующего шага: ', count_step_for_learn)
 
+
     if count_step_for_learn > len(test):
-        count_step_for_learn = int(len(test) / 2)
+        count_step_for_learn = int(len(test) - 2)
         print('UPD: Число шагов изменено по причине маленького размера проверочных данных.')
         print('Требуется переобучить модель!')
         print('Число элементов для прогноза следующего шага: ', count_step_for_learn)
@@ -76,14 +78,14 @@ def scaled(data, size_train_sample, count_step_for_learn):
 
 def fit_model(X_train, y_train):
     model = Sequential()
-    model.add(LSTM(units=100, return_sequences=True, input_shape=(X_train.shape[1], 1)))
-    model.add(LSTM(units=100))
+    model.add(LSTM(units=50, activation='tanh', return_sequences=True, input_shape=(X_train.shape[1], 1)))
+    model.add(LSTM(units=50))
     model.add(Dense(1))
 
     model.compile(loss='mean_squared_error', optimizer='adam')
     model.fit(X_train, y_train, epochs=1, batch_size=1, verbose=2)
 
-    tf.keras.models.save_model(model, 'LSTM2_model')
+    tf.keras.models.save_model(model, 'LSTM1_model')
 
 def prediction_plot(tr_data, v_data, pr_data):
     plt.figure(figsize=(8, 6))
@@ -91,6 +93,7 @@ def prediction_plot(tr_data, v_data, pr_data):
     plt.plot(tr_data, label='Тренировочные данные')
     plt.plot(v_data, label='Проверочные данные')
     plt.plot(pr_data, label='Прогноз')
+
     plt.legend()
     plt.savefig('plot_lstm.png')
     return plt.show()
@@ -98,7 +101,7 @@ def prediction_plot(tr_data, v_data, pr_data):
 
 def forecast_plot(data, forecast_data):
     plt.figure(figsize=(8, 6))
-    plt.title('Прогноз на n значений методам LTSM')
+    plt.title(f'Прогноз на {n} значений методом LTSM')
     plt.plot(data, label='Данные')
     plt.plot(forecast_data, label='Прогноз')
     plt.legend()
@@ -110,20 +113,25 @@ if __name__ == '__main__':
     # загрузка данных
     df = get_df("496xBxfk3x-WYLS1vjmz", "0E73MDNQ65Q6HIDP",comp)
 
+
     # подготовка данных
     data = data_preparation(df)
-
+    #print(df)
+    #print(data)
     # разбиение на тестовую и обучающую выборки
-    count_step_for_learn = 350
+    count_step_for_learn = 800
     X_train, X_test, y_train, y_test, count_step_for_learn = scaled(data, 0.7, count_step_for_learn)
+    #print(X_test)
+    #print(X_train)
 
     # обучение модели
-    if not os.path.isdir('LSTM2_model') or count_step_for_learn != 350:
+    if not os.path.isdir('LSTM1_model') or count_step_for_learn != 800:
         fit_model(X_train, y_train)
+    #print(fit_model(X_train,y_train))
 
     # загрузка модели
-    model_load = tf.keras.models.load_model('LSTM2_model')
-
+    model_load = tf.keras.models.load_model('LSTM1_model')
+    #print(model_load)
     # предсказание для тестовой выборки
     closing_price = model_load.predict(X_test)
 
@@ -149,7 +157,7 @@ if __name__ == '__main__':
     vect_pred = valid_data['4. close'].values
 
     for i in range(n):
-        vect_pred = vect_pred[-350:]
+        vect_pred = vect_pred[-count_step_for_learn:]
         # подгонка подпространств
         v_pred = []
         for v in vect_pred:
@@ -176,50 +184,3 @@ if __name__ == '__main__':
         vect_pred = np.array(vect_pred)
 
     forecast_plot(data['4. close'], pred_data['Forecast'])
-#
-# df['Year'] = df.index.year
-# df['date'] = pd.to_datetime(df['date'])
-# df.index = df['date']
-# hf = list(df['date'])
-# dt = list(data['4. close'])
-# hj = pd.DataFrame({'Date': hf})
-# hj.set_index('Date', inplace=True)
-# hj["c"] = dt
-# prd = list(pred_data['Forecast'])
-# hj = hj.append(prd, ignore_index=True)
-#
-# print(hj)
-# df['Year'] = df.index.year
-# df['date'] = pd.to_datetime(df['date'])
-# df.index = df['date']
-# hf = list(df['date'])
-# dt = list(data['4. close'])
-# hj = pd.DataFrame({'Date': hf})
-# hj.set_index('Date', inplace=True)
-# hj["c"] = dt
-# print(hj)
-
-
-# plotdata = pd.DataFrame({"Close": data['4. close'],
-#                          "Forecast": pred_data['Forecast']})
-# print(plotdata)
-# plit = plotdata
-# hf = list(df['date'])
-# end_date = dt.date.today()
-# rp = list([end_date + dt.timedelta(days=x) for x in range(n+1)])
-# hf = hf + rp
-# hf = pd.DataFrame({'Date': hf})
-# print(hf)
-# hf = hf.sort_values(by='Date')
-# print(hf)
-# hf = hf.reset_index(drop=True)
-# print(hf)
-# plit['Date'] = hf['Date']
-# print(plit)
-#
-# plit.reset_index(level=0, inplace=True)
-# plit = plit.set_index('Date')
-# del plit['index']
-# # plit = plit.sort_values(by='Close',ascending=True,axis=1)
-# #plit = plit.sort_index(ascending=True, axis=0)
-# print(plit)
