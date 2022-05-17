@@ -73,15 +73,15 @@ with st.spinner('Подождите. Выполняются вычисления
     data = pu.data_preparation(df)
 
     # разбиение на тестовую и обучающую выборки
-    count_step_for_learn = 350
+    count_step_for_learn = 800
     X_train, X_test, y_train, y_test, count_step_for_learn = pu.scaled(data, 0.7, count_step_for_learn)
 
         # обучение модели
-    if not os.path.isdir('LSTM2_model') or count_step_for_learn != 350:
+    if not os.path.isdir('LSTM1_model') or count_step_for_learn != 800:
         pu.fit_model(X_train, y_train)
 
     # загрузка модели
-    model_load = tf.keras.models.load_model('LSTM2_model')
+    model_load = tf.keras.models.load_model('LSTM1_model')
 
         # предсказание для тестовой выборки
     closing_price = model_load.predict(X_test)
@@ -109,7 +109,7 @@ with st.spinner('Подождите. Выполняются вычисления
     vect_pred = valid_data['4. close'].values
 
     for i in range(n):
-        vect_pred = vect_pred[-350:]
+        vect_pred = vect_pred[-800:]
         # подгонка подпространств
         v_pred = []
         for v in vect_pred:
