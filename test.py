@@ -41,7 +41,7 @@ try:
     md_chart_2 = f"Измение цена акции за день **{ticker}** (**{company_name}**) "
     md_chart_3 = f"Прогноз цен акций **{ticker}** (**{company_name}**)"
 except:
-    price_data, price_meta_data = get_ticker_daily('IBM')
+    price_data, price_meta_data = get_ticker_daily('TSLA')
     market_data, market_meta_data = get_ticker_daily('SPY')
     md_chart_1 = f"Invalid ticker **{ticker}** showing **IBM** price"
     md_chart_2 = f"Invalid ticker **{ticker}** showing **IBM** APR daily change of"
