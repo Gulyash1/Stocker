@@ -68,6 +68,7 @@ st.dataframe(price_data)
 
 
 @st.cache
+
 with st.spinner('Подождите. Выполняются вычисления'):
     df = ts.get_daily(symbol=ticker, outputsize='full')[0]
     data = pu.data_preparation(df)
