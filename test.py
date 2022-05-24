@@ -67,8 +67,7 @@ st.line_chart(price_data['change'])
 st.dataframe(price_data)
 
 
-@st.cache
-
+@st.cache(suppress_st_warning=True, allow_output_mutation=True)
 with st.spinner('Подождите. Выполняются вычисления'):
     df = ts.get_daily(symbol=ticker, outputsize='full')[0]
     data = pu.data_preparation(df)
