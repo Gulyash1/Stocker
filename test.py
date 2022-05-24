@@ -59,7 +59,7 @@ market_data['change'] = apr_change(market_data['4. close'])
 
 st.markdown(md_chart_1)
 st.line_chart(price_data['4. close'])
-st.dataframe(price_data['4. close'])
+#st.dataframe(price_data['4. close'])
 st.markdown(md_chart_2)
 st.line_chart(price_data['change'])
 st.dataframe(price_data)
