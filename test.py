@@ -28,7 +28,7 @@ ticker = sec_list.loc[sec_list['Name'] == company_name, 'Ticker'].iloc[0]
 #start_date = st.sidebar.date_input('Дата начала', value=datetime(2010, 5, 31)).strftime("%Y-%m-%d")
 #tick = ts.get_daily(symbol=ticker, outputsize='full')[0]
 
-@st.cache(suppress_st_warning=True, allow_output_mutation=True)
+#@st.cache(suppress_st_warning=True, allow_output_mutation=True)
 def get_ticker_daily(ticker_input):
     ticker_data, ticker_metadata = ts.get_daily(symbol=ticker_input, outputsize='full')
     return ticker_data, ticker_metadata
