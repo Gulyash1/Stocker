@@ -15,9 +15,7 @@ ts = TimeSeries(key='0E73MDNQ65Q6HIDP', output_format='pandas')
 
 sec_list = pd.read_csv('cik_ticker.csv', sep='|',
                        names=['CIK', 'Ticker', 'Name', 'Exchange', 'SIC', 'Business', 'Incorporated', 'IRS'])
-@st.cache(suppress_st_warning=True, allow_output_mutation=True)
 name_options = ['International Business Machines Corp']
-@st.cache(suppress_st_warning=True, allow_output_mutation=True)
 name_hint = st.sidebar.text_input(label='Название содержит')
 if name_hint is not None:
     name_options = sec_list[sec_list['Name'].str.contains(name_hint, case=False)]['Name'].tolist()
@@ -50,7 +48,7 @@ except:
 
 
 
-
+@st.cache(suppress_st_warning=True, allow_output_mutation=True)
 def apr_change(pandas_series_input):
      return ((pandas_series_input - pandas_series_input.shift(periods=-1,
                                                               fill_value=0)) / pandas_series_input) * 100 * 252
@@ -68,7 +66,6 @@ st.line_chart(price_data['change'])
 st.dataframe(price_data)
 
 
-@st.cache(suppress_st_warning=True, allow_output_mutation=True)
 with st.spinner('Подождите. Выполняются вычисления'):
     df = ts.get_daily(symbol=ticker, outputsize='full')[0]
     data = pu.data_preparation(df)
