@@ -16,7 +16,6 @@ ts = TimeSeries(key='0E73MDNQ65Q6HIDP', output_format='pandas')
 sec_list = pd.read_csv('cik_ticker.csv', sep='|',
                        names=['CIK', 'Ticker', 'Name', 'Exchange', 'SIC', 'Business', 'Incorporated', 'IRS'])
 name_options = ['International Business Machines Corp']
-@st.cache
 name_hint = st.sidebar.text_input(label='Название содержит')
 if name_hint is not None:
     name_options = sec_list[sec_list['Name'].str.contains(name_hint, case=False)]['Name'].tolist()
