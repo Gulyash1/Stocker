@@ -48,7 +48,6 @@ try:
 
 
 
-@st.cache(suppress_st_warning=True, allow_output_mutation=True)
 def apr_change(pandas_series_input):
      return ((pandas_series_input - pandas_series_input.shift(periods=-1,
                                                               fill_value=0)) / pandas_series_input) * 100 * 252
