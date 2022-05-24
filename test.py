@@ -159,7 +159,6 @@ with st.spinner('Подождите. Выполняются вычисления
     st.markdown(md_chart_3)
     st.line_chart(plot_1)
     st.dataframe(plot_1)
-    time.sleep(5)
 st.success('Готово!')
 
 
