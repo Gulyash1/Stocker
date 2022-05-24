@@ -15,25 +15,26 @@ ts = TimeSeries(key='0E73MDNQ65Q6HIDP', output_format='pandas')
 
 sec_list = pd.read_csv('cik_ticker.csv', sep='|',
                        names=['CIK', 'Ticker', 'Name', 'Exchange', 'SIC', 'Business', 'Incorporated', 'IRS'])
-name_options = ['Microsoft Corp']
+@st.cache
+name_options = ['International Business Machines Corp']
+@st.cache
 name_hint = st.sidebar.text_input(label='Название содержит')
 if name_hint is not None:
     name_options = sec_list[sec_list['Name'].str.contains(name_hint, case=False)]['Name'].tolist()
 if not name_options:
-    name_options = ['Microsoft Corp']
+    name_options = ['International Business Machines Corp']
 
 company_name = st.sidebar.selectbox('Компании', name_options)
 ticker = sec_list.loc[sec_list['Name'] == company_name, 'Ticker'].iloc[0]
-end_date = st.sidebar.date_input('Дата окочания', value=datetime.now()).strftime("%Y-%m-%d")
-start_date = st.sidebar.date_input('Дата начала', value=datetime(2010, 5, 31)).strftime("%Y-%m-%d")
+#end_date = st.sidebar.date_input('Дата окочания', value=datetime.now()).strftime("%Y-%m-%d")
+#start_date = st.sidebar.date_input('Дата начала', value=datetime(2010, 5, 31)).strftime("%Y-%m-%d")
 #tick = ts.get_daily(symbol=ticker, outputsize='full')[0]
 
 @st.cache(suppress_st_warning=True, allow_output_mutation=True)
 def get_ticker_daily(ticker_input):
     ticker_data, ticker_metadata = ts.get_daily(symbol=ticker_input, outputsize='full')
     return ticker_data, ticker_metadata
-
-print(ticker)
+#print(ticker)
 
 try:
     price_data, price_meta_data = get_ticker_daily(ticker)
@@ -67,7 +68,7 @@ st.line_chart(price_data['change'])
 st.dataframe(price_data)
 
 
-
+@st.cache
 with st.spinner('Подождите. Выполняются вычисления'):
     df = ts.get_daily(symbol=ticker, outputsize='full')[0]
     data = pu.data_preparation(df)
@@ -163,7 +164,7 @@ with st.spinner('Подождите. Выполняются вычисления
     st.dataframe(plot_1)
     time.sleep(5)
 st.success('Готово!')
-time.sleep(5)
+
 
 
 
