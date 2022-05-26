@@ -40,7 +40,7 @@ try:
     market_data, market_meta_data = get_ticker_daily('IBM')
     md_chart_1 = f"Цена **{ticker}** (**{company_name}**) "
     md_chart_2 = f"Измение цена акции за день **{ticker}** (**{company_name}**) "
-    md_chart_3 = f"Прогноз цен акций **{ticker}** (**{company_name}**)"
+    md_chart_3 = f"Прогноз цен акций **{ticker}** (**{company_name}**) на 50 дней вперёд"
 except:
     price_data, price_meta_data = get_ticker_daily('IBM')
     market_data, market_meta_data = get_ticker_daily('IBM')
