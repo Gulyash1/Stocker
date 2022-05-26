@@ -1,6 +1,7 @@
 import streamlit as st
 from alpha_vantage.timeseries import TimeSeries
 from datetime import datetime
+from sklearn.preprocessing import MinMaxScaler
 import quandl
 import pandas as pd
 import pipu_upd as pu
