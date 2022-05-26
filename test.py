@@ -29,7 +29,7 @@ ticker = sec_list.loc[sec_list['Name'] == company_name, 'Ticker'].iloc[0]
 #start_date = st.sidebar.date_input('Дата начала', value=datetime(2010, 5, 31)).strftime("%Y-%m-%d")
 #tick = ts.get_daily(symbol=ticker, outputsize='full')[0]
 
-#@st.cache(suppress_st_warning=True, allow_output_mutation=True)
+@st.cache(suppress_st_warning=True, allow_output_mutation=True)
 def get_ticker_daily(ticker_input):
     ticker_data, ticker_metadata = ts.get_daily(symbol=ticker_input, outputsize='full')
     return ticker_data, ticker_metadata
@@ -67,6 +67,7 @@ st.dataframe(price_data)
 
 
 with st.spinner('Подождите. Выполняются вычисления'):
+    @st.cache
     df = ts.get_daily(symbol=ticker, outputsize='full')[0]
     df = df.sort_index(ascending=True, axis=0)
     df = df[-365:]
@@ -107,7 +108,10 @@ with st.spinner('Подождите. Выполняются вычисления
     # generate the forecasts
     #if not os.path.isdir('LSTM3_model'):
         #fit_model(X, Y, n_forecast)
-    model = tf.keras.models.load_model('my model')
+    @st.cache
+    def model_load():
+      return tf.keras.models.load_model('my model')
+    model = model_load()
     X_ = y[- n_lookback:]  # last available input sequence
     X_ = X_.reshape(1, n_lookback, 1)
     Y_ = model.predict(X_).reshape(-1, 1)
