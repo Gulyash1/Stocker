@@ -129,7 +129,7 @@ with st.spinner('Подождите. Выполняются вычисления
     # plot the results
     st.markdown(md_chart_3)
     st.line_chart(results)
-    st.dataframe(result)
+    st.dataframe(results)
 st.success('Готово!')
 
 
