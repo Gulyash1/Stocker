@@ -67,30 +67,30 @@ st.dataframe(price_data)
 
 
 with st.spinner('Подождите. Выполняются вычисления'):
-    df = ts.get_daily(symbol=ticker, outputsize='full')[0]
-    df = df.sort_index(ascending=True, axis=0)
-    df = df[-365:]
-    y = df['4. close']
+  df = ts.get_daily(symbol=ticker, outputsize='full')[0]
+  df = df.sort_index(ascending=True, axis=0)
+  df = df[-365:]
+  y = df['4. close']
     #print(y)
-    y = y.values.reshape(-1, 1)
+  y = y.values.reshape(-1, 1)
 
         # scale the data
-    scaler = MinMaxScaler(feature_range=(0, 1))
-    scaler = scaler.fit(y)
-    y = scaler.transform(y)
+  scaler = MinMaxScaler(feature_range=(0, 1))
+  scaler = scaler.fit(y)
+  y = scaler.transform(y)
 
-    n_lookback = 100  # length of input sequences (lookback period)
-    n_forecast = 50  # length of output sequences (forecast period)
+  n_lookback = 100  # length of input sequences (lookback period)
+  n_forecast = 50  # length of output sequences (forecast period)
 
-    X = []
-    Y = []
+  X = []
+  Y = []
 
-    for i in range(n_lookback, len(y) - n_forecast + 1):
-        X.append(y[i - n_lookback: i])
-        Y.append(y[i: i + n_forecast])
+  for i in range(n_lookback, len(y) - n_forecast + 1):
+      X.append(y[i - n_lookback: i])
+      Y.append(y[i: i + n_forecast])
 
-    X = np.array(X)
-    Y = np.array(Y)
+  X = np.array(X)
+  Y = np.array(Y)
 
 
     # fit the model
@@ -107,32 +107,32 @@ with st.spinner('Подождите. Выполняются вычисления
     # generate the forecasts
     #if not os.path.isdir('LSTM3_model'):
         #fit_model(X, Y, n_forecast)
-    @st.cache
-    def model_load():
-      return tf.keras.models.load_model('my model')
-    model = model_load()
-    X_ = y[- n_lookback:]  # last available input sequence
-    X_ = X_.reshape(1, n_lookback, 1)
-    Y_ = model.predict(X_).reshape(-1, 1)
-    Y_ = scaler.inverse_transform(Y_)
+  @st.cache
+  def model_load():
+    return tf.keras.models.load_model('my model')
+  model = model_load()
+  X_ = y[- n_lookback:]  # last available input sequence
+  X_ = X_.reshape(1, n_lookback, 1)
+  Y_ = model.predict(X_).reshape(-1, 1)
+  Y_ = scaler.inverse_transform(Y_)
 
-    df_past = df[['4. close']].reset_index()
-    df_past.rename(columns={'index': 'date', '4. close': 'Actual'}, inplace=True)
-    df_past['date'] = pd.to_datetime(df_past['date'])
-    df_past['Forecast'] = np.nan
-    df_past['Forecast'].iloc[-1] = df_past['Actual'].iloc[-1]
+  df_past = df[['4. close']].reset_index()
+  df_past.rename(columns={'index': 'date', '4. close': 'Actual'}, inplace=True)
+  df_past['date'] = pd.to_datetime(df_past['date'])
+  df_past['Forecast'] = np.nan
+  df_past['Forecast'].iloc[-1] = df_past['Actual'].iloc[-1]
 
-    df_future = pd.DataFrame(columns=['date', 'Actual', 'Forecast'])
-    df_future['date'] = pd.date_range(start=df_past['date'].iloc[-1] + pd.Timedelta(days=1), periods=n_forecast)
-    df_future['Forecast'] = Y_.flatten()
-    df_future['Actual'] = np.nan
+  df_future = pd.DataFrame(columns=['date', 'Actual', 'Forecast'])
+  df_future['date'] = pd.date_range(start=df_past['date'].iloc[-1] + pd.Timedelta(days=1), periods=n_forecast)
+  df_future['Forecast'] = Y_.flatten()
+  df_future['Actual'] = np.nan
 
-    results = df_past.append(df_future).set_index('date')
+  results = df_past.append(df_future).set_index('date')
 
     # plot the results
-    st.markdown(md_chart_3)
-    st.line_chart(results)
-    st.dataframe(results)
+  st.markdown(md_chart_3)
+  st.line_chart(results)
+  st.dataframe(results)
 st.success('Готово!')
 
 
