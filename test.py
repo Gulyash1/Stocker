@@ -107,7 +107,7 @@ with st.spinner('Подождите. Выполняются вычисления
     # generate the forecasts
     #if not os.path.isdir('LSTM3_model'):
         #fit_model(X, Y, n_forecast)
-  @st.cache(suppress_st_warning=True)
+  @st.cache(suppress_st_warning=True, allow_output_mutation=True)
   def model_load():
     return tf.keras.models.load_model('my model')
   model = model_load()
