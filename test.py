@@ -67,97 +67,69 @@ st.dataframe(price_data)
 
 with st.spinner('Подождите. Выполняются вычисления'):
     df = ts.get_daily(symbol=ticker, outputsize='full')[0]
-    data = pu.data_preparation(df)
+    df = df.sort_index(ascending=True, axis=0)
+    df = df[-365:]
+    y = df['4. close']
+    #print(y)
+    y = y.values.reshape(-1, 1)
 
-    # разбиение на тестовую и обучающую выборки
-    count_step_for_learn = 800
-    X_train, X_test, y_train, y_test, count_step_for_learn = pu.scaled(data, 0.7, count_step_for_learn)
+        # scale the data
+    scaler = MinMaxScaler(feature_range=(0, 1))
+    scaler = scaler.fit(y)
+    y = scaler.transform(y)
 
-        # обучение модели
-    if not os.path.isdir('LSTM1_model') or count_step_for_learn != 800:
-        pu.fit_model(X_train, y_train)
+    n_lookback = 100  # length of input sequences (lookback period)
+    n_forecast = 50  # length of output sequences (forecast period)
 
-    # загрузка модели
-    model_load = tf.keras.models.load_model('LSTM1_model')
+    X = []
+    Y = []
 
-        # предсказание для тестовой выборки
-    closing_price = model_load.predict(X_test)
+    for i in range(n_lookback, len(y) - n_forecast + 1):
+        X.append(y[i - n_lookback: i])
+        Y.append(y[i: i + n_forecast])
 
-        # инверсия нормализации
-    with open("scaler.pickle", "rb") as input_file:
-        scaler = pickle.load(input_file)
-    closing_price = scaler.inverse_transform(closing_price)
-
-        # график прогнозов
-    train_data = data[:-len(closing_price)]
-    valid_data = data[-len(closing_price):]
-    valid_data = valid_data.assign(Predictions=closing_price)
-    pu.prediction_plot(train_data['4. close'], valid_data['4. close'], valid_data['Predictions'])
-
-        # создаем новый фрейм с прошлыми прогнозами
-    pred_data = pd.DataFrame(columns=['Forecast'])
-    pred_data.loc[len(data)] = data.values[-1][0]
-    old_index = len(data)
-
-    # n = 50
-    n = st.slider('Количество дней прогноза:', 0, 350, 5)
-    print('Прогноз выбранного количества значений: ', n)
-    forecast_n = []
-    vect_pred = valid_data['4. close'].values
-
-    for i in range(n):
-        vect_pred = vect_pred[-800:]
-        # подгонка подпространств
-        v_pred = []
-        for v in vect_pred:
-            v_pred.append([v])
-        scaled_pred = scaler.fit_transform(v_pred)
-        scaled_pred = np.array([scaled_pred])
-
-            # прогноз одного элемента
-        one_step_pred = model_load.predict(scaled_pred)
-
-            # инверсия нормализации
-        with open("scaler.pickle", "rb") as input_file:
-            scaler = pickle.load(input_file)
-        one_step_pred = scaler.inverse_transform(one_step_pred)[0][0]
-
-        print('Прогноз ' + str(i + 1) + ': ' + str(one_step_pred))
-        forecast_n.append(one_step_pred)
-        index = old_index + i + 1
-        pred_data.loc[index] = one_step_pred
-
-         # добавляем прогноз в вектор
-        vect_pred = list(vect_pred)
-        vect_pred.append(one_step_pred)
-        vect_pred = np.array(vect_pred)
+    X = np.array(X)
+    Y = np.array(Y)
 
 
-    plotdata = pd.DataFrame({"Close": data['4. close'],
-                             "Forecast": pred_data['Forecast']})
+    # fit the model
+    # model = Sequential()
+    # model.add(LSTM(units=50, return_sequences=True, input_shape=(n_lookback, 1)))
+    # model.add(LSTM(units=50))
+    # model.add(Dense(n_forecast))
+    #
+    # model.compile(loss='mean_squared_error', optimizer='adam')
+    # model.fit(X, Y, epochs=100, batch_size=32, verbose=2)
 
-    #st.line_chart(plotdata)
+    # model.save('model1')
+    #new_model.fit(X, Y, epochs=200, batch_size=32, verbose=0)
+    # generate the forecasts
+    #if not os.path.isdir('LSTM3_model'):
+        #fit_model(X, Y, n_forecast)
+    model = tf.keras.models.load_model('my model')
+    X_ = y[- n_lookback:]  # last available input sequence
+    X_ = X_.reshape(1, n_lookback, 1)
+    Y_ = model.predict(X_).reshape(-1, 1)
+    Y_ = scaler.inverse_transform(Y_)
 
-    plot_1 = plotdata
-    date_list = list(df['date'])
-    end_date = dt.date.today()
-    rp = list([end_date + dt.timedelta(days=x) for x in range(n)])
-    date_list = date_list + rp
-    date_list = pd.DataFrame({'Date': date_list})
-    date_list = date_list.sort_values(by='Date')
-    date_list = date_list.reset_index(drop=True)
-    plot_1['Date'] = date_list['Date']
-    plot_1.reset_index(level=0, drop=True)
-    plot_1 = plot_1.set_index('Date')
+    df_past = df[['4. close']].reset_index()
+    df_past.rename(columns={'index': 'date', '4. close': 'Actual'}, inplace=True)
+    df_past['date'] = pd.to_datetime(df_past['date'])
+    df_past['Forecast'] = np.nan
+    df_past['Forecast'].iloc[-1] = df_past['Actual'].iloc[-1]
 
+    df_future = pd.DataFrame(columns=['date', 'Actual', 'Forecast'])
+    df_future['date'] = pd.date_range(start=df_past['date'].iloc[-1] + pd.Timedelta(days=1), periods=n_forecast)
+    df_future['Forecast'] = Y_.flatten()
+    df_future['Actual'] = np.nan
 
+    results = df_past.append(df_future).set_index('date')
 
-
-    #st.line_chart(data['4. close'])
-    #st.line_chart(ha)
+    # plot the results
+    plt.plot(results)
     st.markdown(md_chart_3)
-    st.line_chart(plot_1)
-    st.dataframe(plot_1)
+    st.line_chart(results)
+    st.dataframe(result)
 st.success('Готово!')
 
 
