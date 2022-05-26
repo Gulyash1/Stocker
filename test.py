@@ -68,6 +68,7 @@ st.dataframe(price_data)
 
 with st.spinner('Подождите. Выполняются вычисления'):
     @st.cache
+    
     df = ts.get_daily(symbol=ticker, outputsize='full')[0]
     df = df.sort_index(ascending=True, axis=0)
     df = df[-365:]
