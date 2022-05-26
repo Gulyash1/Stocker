@@ -127,7 +127,6 @@ with st.spinner('Подождите. Выполняются вычисления
     results = df_past.append(df_future).set_index('date')
 
     # plot the results
-    plt.plot(results)
     st.markdown(md_chart_3)
     st.line_chart(results)
     st.dataframe(result)
