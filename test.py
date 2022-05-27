@@ -94,21 +94,6 @@ with st.spinner('Подождите. Выполняются вычисления
   X = np.array(X)
   Y = np.array(Y)
 
-
-    # fit the model
-    # model = Sequential()
-    # model.add(LSTM(units=50, return_sequences=True, input_shape=(n_lookback, 1)))
-    # model.add(LSTM(units=50))
-    # model.add(Dense(n_forecast))
-    #
-    # model.compile(loss='mean_squared_error', optimizer='adam')
-    # model.fit(X, Y, epochs=100, batch_size=32, verbose=2)
-
-    # model.save('model1')
-    #new_model.fit(X, Y, epochs=200, batch_size=32, verbose=0)
-    # generate the forecasts
-    #if not os.path.isdir('LSTM3_model'):
-        #fit_model(X, Y, n_forecast)
   @st.cache(suppress_st_warning=True, allow_output_mutation=True)
   def model_load():
     return tf.keras.models.load_model('my model')
