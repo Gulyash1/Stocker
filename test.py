@@ -37,13 +37,13 @@ def get_ticker_daily(ticker_input):
 
 try:
     price_data, price_meta_data = get_ticker_daily(ticker)
-    market_data, market_meta_data = get_ticker_daily('IBM')
+    #market_data, market_meta_data = get_ticker_daily(ticker)
     md_chart_1 = f"Цена **{ticker}** (**{company_name}**) "
     md_chart_2 = f"Измение цена акции за день **{ticker}** (**{company_name}**) "
     md_chart_3 = f"Прогноз цен акций **{ticker}** (**{company_name}**) на 50 дней вперёд"
 except:
     price_data, price_meta_data = get_ticker_daily('IBM')
-    market_data, market_meta_data = get_ticker_daily('IBM')
+    #market_data, market_meta_data = get_ticker_daily('IBM')
     md_chart_1 = f"Invalid ticker **{ticker}** showing **IBM** price"
     md_chart_2 = f"Invalid ticker **{ticker}** showing **IBM** APR daily change of"
 
@@ -55,7 +55,7 @@ def apr_change(pandas_series_input):
 
 
 price_data['change'] = apr_change(price_data['4. close'])
-market_data['change'] = apr_change(market_data['4. close'])
+#market_data['change'] = apr_change(market_data['4. close'])
 
 
 st.markdown(md_chart_1)
@@ -67,7 +67,8 @@ st.dataframe(price_data)
 
 
 with st.spinner('Подождите. Выполняются вычисления'):
-  df = ts.get_daily(symbol=ticker, outputsize='full')[0]
+  df = price_data
+  #df = ts.get_daily(symbol=ticker, outputsize='full')[0]
   df = df.sort_index(ascending=True, axis=0)
   df = df[-365:]
   y = df['4. close']
