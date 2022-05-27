@@ -42,13 +42,11 @@ try:
     md_chart_2 = f"Измение цена акции за день **{ticker}** (**{company_name}**) "
     md_chart_3 = f"Прогноз цен акций **{ticker}** (**{company_name}**) на 50 дней вперёд"
 except:
-    err = "Не удалось загрузить данные по компании./n Выберете другую"
-    st.markdown(err)
-#     price_data, price_meta_data = get_ticker_daily('IBM')
-#     #market_data, market_meta_data = get_ticker_daily('IBM')
-#     md_chart_1 = f"Цена **{ticker}** showing **IBM** price"
-#     md_chart_2 = f"Invalid ticker **{ticker}** showing **IBM** APR daily change of"
-#     md_chart_3 = f"Прогноз цен акций **{ticker}** (**{company_name}**) на 50 дней вперёд"
+    price_data, price_meta_data = get_ticker_daily('IBM')
+    #market_data, market_meta_data = get_ticker_daily('IBM')
+    md_chart_1 = f"Цена **{ticker}** showing **IBM** price"
+    md_chart_2 = f"Invalid ticker **{ticker}** showing **IBM** APR daily change of"
+    md_chart_3 = f"Прогноз цен акций **{ticker}** (**{company_name}**) на 50 дней вперёд"
 
 
 
