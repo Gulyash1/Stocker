@@ -64,9 +64,17 @@ st.line_chart(price_data['4. close'])
 #st.dataframe(price_data['4. close'])
 st.markdown(md_chart_2)
 st.line_chart(price_data['change'])
+st.caption('1. Open - цена в момент открытия торгов', unsafe_allow_html=False)
+st.caption('2. High - максимальная цена в момент торгов', unsafe_allow_html=False)
+st.caption('3. Low - минимальная цена в момент торгов', unsafe_allow_html=False)
+st.caption('4. Close - цена на момент закрытия торгов', unsafe_allow_html=False)
+st.caption('5. Volume - объём продаж', unsafe_allow_html=False)
+st.caption('Change - изменение цены закрытию по сравнению с предыдущим днём.', unsafe_allow_html=False)
 st.dataframe(price_data)
 
-
+n = option = st.selectbox(
+     'Выбор количества дней для прогноза',
+     (int(7), int(14), int(30), int(50)))
 with st.spinner('Подождите. Выполняются вычисления'):
   df = price_data
   #df = ts.get_daily(symbol=ticker, outputsize='full')[0]
