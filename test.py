@@ -89,8 +89,8 @@ with st.spinner('Подождите. Выполняются вычисления
   scaler = scaler.fit(y)
   y = scaler.transform(y)
 
-  n_lookback = 100  # length of input sequences (lookback period)
-  n_forecast = 50  # length of output sequences (forecast period)
+  n_lookback = 150  # length of input sequences (lookback period)
+  n_forecast = n  # length of output sequences (forecast period)
 
   X = []
   Y = []
@@ -104,7 +104,7 @@ with st.spinner('Подождите. Выполняются вычисления
 
   @st.cache(suppress_st_warning=True, allow_output_mutation=True)
   def model_load():
-    return tf.keras.models.load_model('my model')
+    return tf.keras.models.load_model(f'my model{n}')
   model = model_load()
   X_ = y[- n_lookback:]  # last available input sequence
   X_ = X_.reshape(1, n_lookback, 1)
