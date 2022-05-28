@@ -70,6 +70,7 @@ st.caption('3. Low - минимальная цена в момент торго�
 st.caption('4. Close - цена на момент закрытия торгов', unsafe_allow_html=False)
 st.caption('5. Volume - объём продаж', unsafe_allow_html=False)
 st.caption('Change - изменение цены закрытию по сравнению с предыдущим днём.', unsafe_allow_html=False)
+price_data.drop('change', axis = 1)
 st.dataframe(price_data)
 
 n = option = st.selectbox(
