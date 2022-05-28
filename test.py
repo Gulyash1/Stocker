@@ -69,7 +69,6 @@ st.caption('2. High - максимальная цена в момент торг
 st.caption('3. Low - минимальная цена в момент торгов', unsafe_allow_html=False)
 st.caption('4. Close - цена на момент закрытия торгов', unsafe_allow_html=False)
 st.caption('5. Volume - объём продаж', unsafe_allow_html=False)
-st.caption('Change - изменение цены закрытию по сравнению с предыдущим днём.', unsafe_allow_html=False)
 price_data.drop('change',axis=1, inplace=True)
 st.dataframe(price_data)
 
